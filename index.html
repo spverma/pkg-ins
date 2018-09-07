@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>Verify the installer</title>
+  <script src="source/pkgInstaller.js" type="text/javascript"></script>
+  <script>
+    function validate(){
+      let txtDependencies = document.getElementById("txtDependencies");
+      let dependenciesArray = [];
+      let result = null;
+      if(txtDependencies && txtDependencies.value.trim().length == 0) {
+        alert("Dependencies required. Please enter the dependencies \n as per the example mentioned above the box and then verify...");
+      } else {
+        let splittedDependencies = txtDependencies.value.trim().split("\",");
+          splittedDependencies.forEach((dependency) =>{
+          dependency = dependency.replace(/"/g, "");
+          dependenciesArray.push(dependency.trim());
+        });
+        document.getElementById("lblResult").innerHTML = "";
+        let installer = new PkgInstaller(dependenciesArray);
+        try{
+        result = installer.install();
+        document.getElementById("lblResult").innerHTML = result;
+        }catch{
+          document.getElementById("lblResult").innerHTML = "circular dependency found/or invalid input";
+        }
+        
+      }
+      
+    }
+  </script>
+</head>
+
+<body>
+  <br><label><b>Enter the dependencies list separate by comma(,):</b><br><br>
+    <b><u>Example 1:</u></b><br>
+
+    "KittenService: ",<br>   
+    "Leetmeme: Cyberportal",<br>   
+    "Cyberportal: Ice",<br>   
+    "CamelCaser: KittenService",<br>   
+    "Fraudstream: Leetmeme",<br>   
+    "Ice: "<br> <br>
+
+    <b><u>Example 2:</u></b><br>
+    "KittenService: CamelCaser",<br> 
+    "CamelCaser:<br> <br>
+
+    <b><u>OR Example 3 (to verify the circular dependencies):</u></b><br>
+    "KittenService: ",<br>   
+    "Leetmeme: Cyberportal",<br>   
+    "Cyberportal: Ice",<br>   
+    "CamelCaser: KittenService",<br>   
+    "Fraudstream: ",<br>   
+    "Ice: Leetmeme" 
+  </label><br><br>
+
+  <textarea id="txtDependencies" rows="10" cols="80">
+    
+  </textarea> <button id="btnValidate" onClick="return validate()">Validate</button>
+<br><br><b>Result: </b> <label id="lblResult"></label>
+</body>
+</html>
